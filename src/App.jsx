@@ -1,9 +1,10 @@
+import Header from "./Component/Header";
 
 
 function App() {
   return (
     <>
-        <h1>filmyverse</h1>
+       <Header />
     </>
   );
 }
