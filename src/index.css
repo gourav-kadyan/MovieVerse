@@ -6,3 +6,7 @@ body {
     background: black;
     color: antiquewhite;
 }
+
+.card {
+    background: rgb(22, 21, 21);
+}
