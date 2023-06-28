@@ -1,5 +1,6 @@
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
+import {collection, getFirestore} from "firebase/firestore";
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
 
@@ -13,5 +14,12 @@ const firebaseConfig = {
   appId: "1:909152427478:web:c7ad0279171e50a09c1877"
 };
 
+
+
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
+
+export const dp = getFirestore(app);
+export const moviesRef = collection(dp,"movies");
+
+export default app;

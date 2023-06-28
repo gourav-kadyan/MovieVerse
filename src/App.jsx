@@ -6,7 +6,7 @@ import Navigation from "./Component/Navigation";
 
 function App() {
   return (
-    <>
+    <div className="relative">
       
       <Router>
         <Header />
@@ -15,7 +15,7 @@ function App() {
           <Route exact path="/addmovie" element={<AddMovie />} />
         </Routes>
       </Router>
-    </>
+    </div>
   );
 }
 

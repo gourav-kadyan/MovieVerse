@@ -7,6 +7,10 @@ body {
     color: antiquewhite;
 }
 
+.header {
+    background: #17181a;
+}
+
 .card {
     background: rgb(22, 21, 21);
 }
