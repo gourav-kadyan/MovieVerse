@@ -4,7 +4,7 @@
 
 # Deployed Link 
 
-    ### (https://movie-verse-chi.vercel.app/)
+    ## https://movie-verse-chi.vercel.app/
 
 ## About Project -- Movie Verse
 
