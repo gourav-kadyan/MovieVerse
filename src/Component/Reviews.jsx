@@ -1,9 +1,10 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import ReactStars from "react-stars";
 import { reviewsRef, db } from "../firebase/firebase";
 import { addDoc, doc, updateDoc, query, where, getDocs } from "firebase/firestore";
 import { TailSpin,ThreeDots } from "react-loader-spinner";
 import swal from "sweetalert";
+import { Appstate } from "../App";
 
 const Reviews = ({ id, prevRating, userRated }) => {
   const [rating, setRating] = useState(0);
@@ -11,13 +12,14 @@ const Reviews = ({ id, prevRating, userRated }) => {
   const [reviewsLoading, setReviewsLoading] = useState(false);
   const [field, setField] = useState("");
   const [data, setData] = useState([]);
+  const useAppstate = useContext(Appstate)
 
   const sendReview = async () => {
     setLoading(true);
     try {
       await addDoc(reviewsRef, {
         movieid: id,
-        name: "Tony",
+        name: useAppstate.userName,
         rating: rating,
         thought: field,
         timestamp: new Date().getTime(),
