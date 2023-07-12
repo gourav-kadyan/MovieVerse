@@ -11,6 +11,7 @@
 • Authentication system using phone number OTP verification and Database is Used from Firebase.
 
 • Movie management with the ability to add films via a form,
-  - including image Links, release year, name, and Description
-   
+
+- including image Links, release year, name, and Description
+
 •we can rate them after adding.
