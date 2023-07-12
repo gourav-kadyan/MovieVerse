@@ -1,8 +1,15 @@
 import React, { useContext, useEffect, useState } from "react";
 import ReactStars from "react-stars";
 import { reviewsRef, db } from "../firebase/firebase";
-import { addDoc, doc, updateDoc, query, where, getDocs } from "firebase/firestore";
-import { TailSpin,ThreeDots } from "react-loader-spinner";
+import {
+  addDoc,
+  doc,
+  updateDoc,
+  query,
+  where,
+  getDocs,
+} from "firebase/firestore";
+import { TailSpin, ThreeDots } from "react-loader-spinner";
 import swal from "sweetalert";
 import { Appstate } from "../App";
 import { useNavigate } from "react-router-dom";
@@ -13,38 +20,49 @@ const Reviews = ({ id, prevRating, userRated }) => {
   const [reviewsLoading, setReviewsLoading] = useState(false);
   const [field, setField] = useState("");
   const [data, setData] = useState([]);
-  const useAppstate = useContext(Appstate)
+  const useAppstate = useContext(Appstate);
   const navigate = useNavigate();
+  const [newAdded, setNewAdded] = useState(0);
 
   const sendReview = async () => {
-
     setLoading(true);
     try {
-      if(useAppstate.login){
-        await addDoc(reviewsRef, {
-          movieid: id,
-          name: useAppstate.userName,
-          rating: rating,
-          thought: field,
-          timestamp: new Date().getTime(),
-        });
-        const _doc = doc(db, "movies", id);
-        await updateDoc(_doc, {
-          rating: prevRating + rating,
-          rated: userRated + 1,
-        });
+      if (rating != 0) {
+        if (useAppstate.login) {
+          await addDoc(reviewsRef, {
+            movieid: id,
+            name: useAppstate.userName,
+            rating: rating,
+            thought: field,
+            timestamp: new Date().getTime(),
+          });
+
+          const ref = doc(db, "movies", id);
+          await updateDoc(ref, {
+            rating: prevRating + rating,
+            rated: userRated + 1,
+          });
+
+          setRating(0);
+          setField("");
+          setNewAdded(newAdded + 1);
+          swal({
+            title: "Review Sent",
+            icon: "success",
+            buttons: false,
+            timer: 3000,
+          });
+        } else {
+          navigate("/login");
+        }
+      } else {
         swal({
-          title: "Reviews Sent",
-          icon: "success",
+          title: "Please give rating",
+          icon: "warning",
           buttons: false,
           timer: 3000,
         });
-    }
-    else{
-      navigate('/login')
-    }
-      setField("");
-      setRating(0);
+      }
     } catch (error) {
       swal({
         title: error.message,
@@ -56,18 +74,21 @@ const Reviews = ({ id, prevRating, userRated }) => {
     setLoading(false);
   };
 
-  useEffect(()=>{
-    async function getData(){
-        setReviewsLoading(true);
-        let _query = query(reviewsRef, where('movieid', '==', id))
-        const querysnapshot = await getDocs(_query);
-        querysnapshot.forEach((doc) => {
-            setData((prev) => [...prev, doc.data()]);
-        })
-        setReviewsLoading(false);
+  useEffect(() => {
+    async function getData() {
+      setReviewsLoading(true);
+      setData([]);
+      let quer = query(reviewsRef, where("movieid", "==", id));
+      const querySnapshot = await getDocs(quer);
+
+      querySnapshot.forEach((doc) => {
+        setData((prev) => [...prev, doc.data()]);
+      });
+
+      setReviewsLoading(false);
     }
     getData();
-  },[]);
+  }, [newAdded]);
 
   return (
     <div className="mt-4 border-t-2 border-gray-700 w-full">
@@ -99,26 +120,29 @@ const Reviews = ({ id, prevRating, userRated }) => {
         </div>
       ) : (
         <div>
-            {
-                data.map((e,i)=> {
-                    return(
-                        <div className="bg-gray-800 bg-opacity-75 p-2 mt-2 w-full border-b border-gray-500" key={i}>
-                            <div className="flex items-center">
-                                <p className="text-blue-400">{e.name}</p>
-                                <p className="ml-4 text-xs">{new Date(e.timestamp).toLocaleString()}</p>
-                            </div>
-                            <ReactStars
-                                size={15}
-                                half={true}
-                                value={e.rating}
-                                edit={false}
-                            />
-                            <p>{e.thought}</p>
-                        </div>
-                    )
-                })
-            }    
-         </div>
+          {data.map((e, i) => {
+            return (
+              <div
+                className="bg-gray-800 bg-opacity-75 p-2 mt-2 w-full border-b border-gray-500"
+                key={i}
+              >
+                <div className="flex items-center">
+                  <p className="text-blue-400">{e.name}</p>
+                  <p className="ml-4 text-xs">
+                    {new Date(e.timestamp).toLocaleString()}
+                  </p>
+                </div>
+                <ReactStars
+                  size={15}
+                  half={true}
+                  value={e.rating}
+                  edit={false}
+                />
+                <p>{e.thought}</p>
+              </div>
+            );
+          })}
+        </div>
       )}
     </div>
   );
