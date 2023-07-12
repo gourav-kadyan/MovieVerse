@@ -5,6 +5,7 @@ import { addDoc, doc, updateDoc, query, where, getDocs } from "firebase/firestor
 import { TailSpin,ThreeDots } from "react-loader-spinner";
 import swal from "sweetalert";
 import { Appstate } from "../App";
+import { useNavigate } from "react-router-dom";
 
 const Reviews = ({ id, prevRating, userRated }) => {
   const [rating, setRating] = useState(0);
@@ -13,28 +14,35 @@ const Reviews = ({ id, prevRating, userRated }) => {
   const [field, setField] = useState("");
   const [data, setData] = useState([]);
   const useAppstate = useContext(Appstate)
+  const navigate = useNavigate();
 
   const sendReview = async () => {
+
     setLoading(true);
     try {
-      await addDoc(reviewsRef, {
-        movieid: id,
-        name: useAppstate.userName,
-        rating: rating,
-        thought: field,
-        timestamp: new Date().getTime(),
-      });
-      const _doc = doc(db, "movies", id);
-      await updateDoc(_doc, {
-        rating: prevRating + rating,
-        rated: userRated + 1,
-      });
-      swal({
-        title: "Movie added successfully",
-        icon: "success",
-        buttons: false,
-        timer: 3000,
-      });
+      if(useAppstate.login){
+        await addDoc(reviewsRef, {
+          movieid: id,
+          name: useAppstate.userName,
+          rating: rating,
+          thought: field,
+          timestamp: new Date().getTime(),
+        });
+        const _doc = doc(db, "movies", id);
+        await updateDoc(_doc, {
+          rating: prevRating + rating,
+          rated: userRated + 1,
+        });
+        swal({
+          title: "Reviews Sent",
+          icon: "success",
+          buttons: false,
+          timer: 3000,
+        });
+    }
+    else{
+      navigate('/login')
+    }
       setField("");
       setRating(0);
     } catch (error) {
